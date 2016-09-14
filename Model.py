@@ -51,9 +51,9 @@ def kFold(model, X, y, k):
     # print oddOneOut
     #train for longer than this?
     for i in range(oddOneOut):
-        model.train(sets[i], answers[i], 20)
+        model.train(sets[i], answers[i], 200)
     for i in range(oddOneOut+1, k):
-        model.train(sets[i], answers[i], 20)
+        model.train(sets[i], answers[i], 200)
     print "Test Case Error"
     # print sets[oddOneOut].shape
     test = model.forward(sets[oddOneOut])
@@ -128,5 +128,5 @@ if __name__ == "__main__":
     Fl.addLayer(fInput)
     fHidden = Layer(Fl, 6, 3, .03)
     Fl.addLayer(fHidden)
-    # kFold(Fl, X2, y2, 5)
-    Fl.train(X2, y2, 200)
+    kFold(Fl, X2, y2, 3)
+    # Fl.train(X2, y2, 200)

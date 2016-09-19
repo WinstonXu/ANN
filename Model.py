@@ -4,6 +4,7 @@ from Layer import Layer
 
 def loadFlower(filename = 'iris.csv'):
     mydata = np.genfromtxt(filename, delimiter=',', skip_header=0)
+    #Changed output to be 100, 010, or 001 for the 3 iris types
     y = mydata[:,[4,5,6]]
     X = mydata[:, [0,1,2,3]]
     X_norm = X / X.max(axis=0)
@@ -24,7 +25,7 @@ def loadDataset(filename='breast_cancer.csv'):
     X_norm = X / X.max(axis=0)
 
     return X_norm, y
-
+#Just used to test derivative of error values
 def gradientChecker(model, X, y):
     epsilon = 1E-5
     model.layers[0].weights[0][0] += epsilon
@@ -74,6 +75,7 @@ class Model:
         y = y.reshape(len(y), out.shape[1])
         out = np.round(out)
         count = np.count_nonzero(y - out)
+        #len(X)*y.shape[1] to get correct number of total count ups
         correct = len(X)*y.shape[1] - count
         print "%.4f%%" % (float(correct)*100.0 / (len(X)*y.shape[1]))
 
@@ -90,6 +92,7 @@ class Model:
         for i in range(number_epochs):
             pred = self.forward(X)
             self.reportAccuracy(X, y)
+            #Commented out to reduce console spam
             # print self.calculateError(y, pred)
             self.backward(self.calculateDerivError(y, pred))
 
@@ -113,13 +116,10 @@ if __name__ == "__main__":
     BC.addLayer(Hidden)
     # gradientChecker(BC, X, y)
     BC.train(X,y,400)
-    #Numpy split likes clean division
+    #Numpy split likes clean division, just used train b/c otherwise
+    #feeds in data row by row
     # kFold(BC, X, y, 683)
 
-    #This works decently
-    # Perceptron = Layer(BC, 10,1,.04)
-    # BC.addLayer(Perceptron)
-    # BC.train(X,y, 300)
     print "\nSecond Data Set\n"
     X2, y2 = loadFlower()
     # print X2

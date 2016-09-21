@@ -3,6 +3,7 @@ import numpy as np
 from Layer import Layer
 
 def loadFlower(filename = 'iris.csv'):
+    '''Loads in iris data, returns independent and dependent matrices'''
     mydata = np.genfromtxt(filename, delimiter=',', skip_header=0)
     #Changed output to be 100, 010, or 001 for the 3 iris types
     y = mydata[:,[4,5,6]]
@@ -11,6 +12,7 @@ def loadFlower(filename = 'iris.csv'):
     return X_norm, y
 
 def loadDataset(filename='breast_cancer.csv'):
+    '''Loads in breast cancer data, returns independent and dependent matrices'''
     my_data = np.genfromtxt(filename, delimiter=',', skip_header=1)
 
     # The labels of the cases
@@ -27,6 +29,7 @@ def loadDataset(filename='breast_cancer.csv'):
     return X_norm, y
 #Just used to test derivative of error values
 def gradientChecker(model, X, y):
+    '''Used to check correct derivative error values are being passed down'''
     epsilon = 1E-5
     model.layers[0].weights[0][0] += epsilon
     out1 = model.forward(X)
@@ -45,6 +48,7 @@ def gradientChecker(model, X, y):
     model.backward(err3)
 
 def kFold(model, X, y, k):
+    '''Given model and dataset, run K-Fold cross validation'''
     sets = np.split(X, k)
     # print sets[4].shape
     answers = np.split(y, k)
@@ -71,6 +75,7 @@ class Model:
         self.layers.append(layer)
 
     def reportAccuracy(self, X, y):
+        '''Given input and output, reports %% error'''
         out = self.forward(X)
         y = y.reshape(len(y), out.shape[1])
         out = np.round(out)
@@ -80,15 +85,18 @@ class Model:
         print "%.4f%%" % (float(correct)*100.0 / (len(X)*y.shape[1]))
 
     def calculateDerivError(self, y, pred):
+        '''Returns derivative error given target and output'''
         # print y.shape, pred.shape
         y = y.reshape(len(y), pred.shape[1])
         return 2*(y - pred)
 
     def calculateError(self, y, pred):
+        '''Given target and output returns total error'''
         y = y.reshape(len(y),pred.shape[1])
         return (np.sum(np.power((y - pred), 2)))
 
     def train(self, X, y, number_epochs):
+        '''Given input, target, and number, run testing for that many generations'''
         for i in range(number_epochs):
             pred = self.forward(X)
             self.reportAccuracy(X, y)
@@ -97,11 +105,13 @@ class Model:
             self.backward(self.calculateDerivError(y, pred))
 
     def forward(self, X):
+        '''Passes input through all layers in model'''
         for layer in self.layers:
             X = layer.forward(X)
         return X
 
     def backward(self, error_vector):
+        '''BackPropagation algorithm'''
         err = error_vector
         for i in range(len(self.layers)):
             err = self.layers[len(self.layers)-(i+1)].backward(err)
@@ -114,7 +124,6 @@ if __name__ == "__main__":
     BC.addLayer(Input)
     Hidden = Layer(BC, 25, 1, .0022)
     BC.addLayer(Hidden)
-    # gradientChecker(BC, X, y)
     BC.train(X,y,400)
     #Numpy split likes clean division, just used train b/c otherwise
     #feeds in data row by row
